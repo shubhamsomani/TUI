@@ -5,55 +5,82 @@
 # include<ncurses.h>
 # include<form.h>
 # include<menu.h>
+#include <stdlib.h>
 
 int main()
 {
-  char ** input[50];
+  char ** input[100];
   
   //call to input_provider.h for getting parameters
   int len=return_parameters(input);
 
   int i=0; 
 
-  //loop to check if values have been imported correctly. 
-  /*for(i=0;i<len;i++)
+  /*//loop to check if values have been imported correctly.
+  FILE * Output;
+  Output = fopen("output.txt", "a");
+  for(i=0;i<len;i++)
   {
        int j=0;
        for(j=0;input[i][j]!="end";j++)
        {
-            printf("%s",input[i][j]);
+            fprintf(Output, input[i][j]);
+	    fprintf(Output, " ");
        }
-       printf("\n");
-  }*/
- 
+       fprintf(Output, "\n\n");
+  }
+  fclose(Output);*/
+
 
   // Declaring Menu
-  ITEM* items[len+1];
+  ITEM* items[10000];
   MENU* my_menu;
 
-  char* x="->";
+  char* x="";
+
+  //Comes back from other display screen if esc is pressed.
+  xyz:;
+
+  int item_len=0;
 
   //Assigning elements to be displayed on main menu.
   for(i=0;i<len;i++)
   {
-	items[i]=new_item(x,input[i][0]);
+	items[i]=new_item(input[i][0],x);
+
+
+	/* To print complete list of items in each section
+	int sec_len=0;
+	for(sec_len=0;input[i][sec_len]!="end";sec_len++);
+
+	items[item_len]=new_item(x,input[i][0]);
+	item_len++;
+
+	int j;
+        for(j=1;j<sec_len;j+=6)
+	{
+		items[item_len]=new_item(x,input[i][j]);
+		item_len++;
+	}*/
+
   }
   
-  items[len]=NULL;
+  items[i]=NULL;
   
-  xyz:
   //Initializing Curses.
   initscr();
   cbreak();
   noecho();
   keypad(stdscr,TRUE);
+
+
   
   //Creating the main menu.
   my_menu=new_menu(items);
   mvprintw(LINES - 2, 0, "RTEMS Configuration Tool");
   post_menu(my_menu);
   refresh();
-  
+
   int c;
   int count=0;
 
@@ -62,49 +89,80 @@ int main()
    {   
         switch(c)
 	    {
-         //In case down is pressed.	
-         case KEY_DOWN:
-	        menu_driver(my_menu, REQ_DOWN_ITEM);
-			count++;
-			break;
+        //In case down is pressed.
+        case KEY_DOWN:
+            menu_driver(my_menu, REQ_DOWN_ITEM);
+            //count++;
+            break;
+
         //In case up is pressed	
-		case KEY_UP:
-			menu_driver(my_menu, REQ_UP_ITEM);
-			count--;
-			break;
+        case KEY_UP:
+             menu_driver(my_menu, REQ_UP_ITEM);
+             //count--;
+             break;
+
 		// If user presses space then he will go to next screen where he can modify options particular to that field.
 		case ' ':
 			initscr();
-            cbreak();
+		    cbreak();
 			noecho();
 			keypad(stdscr, TRUE);
-                        
-            //calculating size of fields required
-            for(i=0;input[count][i]!="end";i++)
-            {}
+			clrtoeol();
 
+			int macro_index,selected_index;
+			selected_index=0;
+
+			//get current selected item
+			char* macro_name=item_name(current_item(my_menu));
+
+			for(macro_index=0;macro_index<len;macro_index++)
+			{
+				//mvprintw(LINES - 1, 0,macro_name);
+				//mvprintw(LINES - 2, 0,input[macro_index][0]);
+				// If item matches then we can get the index
+				if(!strcmp(macro_name, input[macro_index][0]))
+				{
+					selected_index=macro_index;
+					break;
+					/*mvprintw(LINES - 5, 0,macro_name);
+					mvprintw(LINES - 6, 0,input[macro_index][0]);*/
+				}
+			}
+
+			/* To print item selected
+			mvprintw(20, 0, "Item selected is : %s",
+			item_name(current_item(my_menu)));
+			pos_menu_cursor(my_menu);
+			break;*/
+
+
+		    //calculating size of fields required
+		    for(i=0;input[selected_index][i]!="end";i++);
             int section_length=i;
-            int field_length=i/3;
+	        int field_length=i/6;
+			//mvprintw(LINES - 1, 0, (char*)field_length);
 
-			FIELD *field[field_length+1];
+
+            FIELD *field[field_length+10];
             FORM *form;
                         
-			int spacing=1;
+            int spacing=1;
 			
-			//Dynamically creating fields depending upon section
+            //Dynamically creating fields depending upon section
             for(i=0;i<field_length;i++)
-			{
-                           field[i]= new_field(1, 30, spacing, 40, 0, 0);
-                           spacing+=2;
-			}
+		    {
+                  field[i]= new_field(1, 30, spacing, 40, 0, 0);
+                  spacing+=2;
+            }
   
-			for(i=0;i<field_length;i++)
-			{
-			   set_field_back(field[i], A_UNDERLINE);
-  			   field_opts_off(field[i], O_AUTOSKIP);
-			}
+            for(i=0;i<field_length;i++)
+            {
+                    set_field_back(field[i], A_UNDERLINE);
+                    field_opts_off(field[i], O_AUTOSKIP);
+            }
 
-			field[field_length]=NULL;
+            field[field_length]=NULL;
+
 
             // Creating a form with the above declared fields.
 			form=new_form(field);
@@ -112,9 +170,9 @@ int main()
   			refresh();
 			
 			spacing=1;
-			for(i=1;i<section_length;i+=3)
+			for(i=1;i<section_length;i+=6)
 			{
-			    mvprintw(spacing,0,input[count][i]);
+			    mvprintw(spacing,0,input[selected_index][i]);
 			    spacing+=2;
    			    refresh();
 			}
@@ -140,8 +198,8 @@ int main()
 					default:	
 						form_driver(form, ch);
 						break;
-                                }
-                 	}
+                }
+     	     }
 
   			//Freeing memory of form
   			unpost_form(form);
@@ -150,9 +208,13 @@ int main()
   			for(i=0;i<field_length;i++)
   			free_field(field[i]);
 
+			initscr();
+            cbreak();
+            noecho();
+			refresh();
 			endwin();
 			//goes back to main menu if escape is pressed
-            goto xyz;
+		    goto xyz;
    	    } 
        }
 

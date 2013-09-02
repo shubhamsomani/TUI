@@ -11,9 +11,12 @@ def write():
 
     #using python's config parser
     config=ConfigParser.RawConfigParser()
+
+    data=open("conf.t")
+    contents=data.readlines()
     
     #getting data from text parser
-    parameters=text_parser.return_parameters()
+    parameters=text_parser.return_parameters(contents)
 
     global index
 

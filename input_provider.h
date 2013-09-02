@@ -30,7 +30,7 @@ if(mod)
 {
 	mdict = PyModule_GetDict(mod);
 
-    //Calling the write function of the configuration parser.
+        //Calling the write function of the configuration parser.
 	func = PyDict_GetItemString(mdict, "write"); 
 	if (func)
 	{
@@ -50,22 +50,23 @@ if(mod)
 	      //Allocating space of 200 elements for each section
 	      for(init=0;init<len;init++)
 	      {
-    		 input[init]=(char**)malloc(200*sizeof(*input));
+    		 input[init]=(char**)malloc(300*sizeof(*input));
 	      }
           
           //Reading elements from a python list and transferring it into a charater array
 	      for(i=0;i<len;i++)
 	      {
-              PyObject* section=PySequence_Fast_GET_ITEM(result, i);	
-              int section_len=PyList_GET_SIZE(section);
-		      int j=0;
-              for(j=0;j<section_len;j++)
-		      {
-                       PyObject* item1=PySequence_Fast_GET_ITEM(section, j);
-                       input[i][j]=PyBytes_AsString(item1);
-              }
-	          input[i][j]="end";
-	      }
+                PyObject* section=PySequence_Fast_GET_ITEM(result, i);
+                int section_len=PyList_GET_SIZE(section);
+                int j=0;
+                for(j=0;j<section_len;j++)
+                {
+                      PyObject* item1=PySequence_Fast_GET_ITEM(section, j);
+                      input[i][j]=PyBytes_AsString(item1);
+                      //printf("%s\n",input[i][j]);
+                }
+                input[i][j]="end";
+          }
 	      
 	      //PyRun_SimpleString("print 'Success'");	 
 
