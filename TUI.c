@@ -159,19 +159,19 @@ int main()
 				}
 			}
 
-		//calculating size of fields required
-        for(i=0;input[selected_index][i]!="end";i++);
+			//calculating size of fields required
+        		for(i=0;input[selected_index][i]!="end";i++);
 
-	    int section_length=i;
-        int field_length=i/6;
-        FIELD *field[field_length+10];
-        FORM *form;
-        int spacing=1;
-	//Dynamically creating fields depending upon section
-		for(i=0;i<field_length;i++)
-		{
-		field[i]= new_field(1, 30, spacing, 40, 0, 0);
-		spacing+=2;
+			int section_length=i;
+        		int field_length=i/6;
+			FIELD *field[field_length+10];
+			FORM *form;
+			int spacing=1;
+			//Dynamically creating fields depending upon section
+			for(i=0;i<field_length;i++)
+			{
+				field[i]= new_field(1, 30, spacing, 40, 0, 0);
+				spacing+=2;
 
 				if(in(default_values[selected_index][i],"The default value is "))
 				{
@@ -197,19 +197,19 @@ int main()
 				//char xyz=(char)((int)('0')+i);
 				//char*abc= &xyz;//field_buffer(field[i],0)
 				//mvprintw(i, 0,abc);
-	}
+			}
 			//getch();
   
-	for(i=0;i<field_length;i++)
-	{
-		set_field_back(field[i], A_UNDERLINE);
-		field_opts_off(field[i], O_AUTOSKIP);
+			for(i=0;i<field_length;i++)
+			{
+				set_field_back(field[i], A_UNDERLINE);
+				field_opts_off(field[i], O_AUTOSKIP);
 				field_opts_off(field[i], O_STATIC);
 				field_opts_on(field[i], O_EDIT);
-		}
+			}
 
-	field[field_length]=NULL;
-		// Creating a form with the above declared fields.
+			field[field_length]=NULL;
+			// Creating a form with the above declared fields.
 			form=new_form(field);
   			post_form(form);
   			refresh();
@@ -226,7 +226,7 @@ int main()
   			while((ch = getch()) != KEY_F(1))
 			{ 
                       
-	// If user presses esc key then he will go back to the main menu.
+				// If user presses esc key then he will go back to the main menu.
                 		if(ch==27)
 				{
 					clear();
@@ -248,7 +248,7 @@ int main()
 						//mvprintw(2*i+1, 0, default_values[selected_index][i]);
 					}
 					//getch();
-			break;
+					break;
 				}
 		
 				switch(ch)
@@ -262,27 +262,21 @@ int main()
 						form_driver(form, REQ_END_LINE);
 						break;
 					case KEY_DC:
-						form_driver(form, REQ_DEL_CHAR);
+                         form_driver(form, REQ_DEL_CHAR);
 						break;
-
-		            case KEY_BACKSPACE:
-						if (form_driver(form, REQ_PREV_CHAR) == E_OK) {
+                    case KEY_BACKSPACE:
+						if (form_driver(form, REQ_PREV_CHAR) == E_OK)
                         form_driver(form, REQ_DEL_CHAR);
-						}
 						break;
-
                     case KEY_LEFT:
 						form_driver(form, REQ_PREV_CHAR);
 						break;
-
                     case KEY_RIGHT:
 						form_driver(form, REQ_NEXT_CHAR);
 						break;
-
                     case KEY_HOME:
 						form_driver(form, REQ_BEG_FIELD);
 						break;
-
                     case KEY_END:
 						form_driver(form, REQ_END_FIELD);
 						break;
@@ -300,8 +294,8 @@ int main()
   			free_field(field[i]);
 
 			initscr();
-		cbreak();
-		noecho();
+			cbreak();
+			noecho();
 			refresh();
 			endwin();
 			//goes back to main menu if escape is pressed
